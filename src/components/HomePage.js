@@ -1,30 +1,33 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
-import "../styles/HomePage.scss";
+import { fetchModelSpacesApi } from "../apis";
 import ModelSpaceCard from "./ModelSpaceCard";
 import Loader from "./Loader";
 import CardLoader from "../assets/CardLoader.jpeg";
+import "../styles/HomePage.scss";
+
 const HomePage = () => {
   const [modelSpaces, setModelSpaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchModelSpaces = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/model-spaces`
-        );
-        setModelSpaces(response.data.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchModelSpaces();
   }, []);
+
+  const fetchModelSpaces = async () => {
+    setLoading(true);
+    fetchModelSpacesApi()
+      .then(({ data }) => {
+        setModelSpaces(data.data);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="home-page">

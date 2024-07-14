@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { fetchModelSpaceApi, handlePredictApi } from "../apis";
+import Loader from "./Loader";
+import ModelFormLoader from "../assets/ModelFormLoader.jpeg";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/ModelSpacePage.scss";
-import ModelFormLoader from "../assets/ModelFormLoader.jpeg";
-import Loader from "./Loader";
 
 const ModelSpacePage = () => {
   const { id } = useParams();
@@ -18,27 +18,26 @@ const ModelSpacePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchModelSpace = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/model-spaces/${id}`
-        );
-        setModelSpace(response.data.data);
-        if (
-          response?.data?.data?.outputs &&
-          response?.data?.data?.outputs[0]?.type
-        ) {
-          setOutputType(response.data.data.outputs[0].type);
-        }
-      } catch (err) {
-        setError(err.message);
-        toast.error(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchModelSpace();
   }, [id]);
+
+  const fetchModelSpace = async () => {
+    setLoading(true);
+    fetchModelSpaceApi(id)
+      .then(({ data }) => {
+        setModelSpace(data.data);
+        if (data?.data?.outputs && data?.data?.outputs[0]?.type) {
+          setOutputType(data.data.outputs[0].type);
+        }
+      })
+      .catch((err) => {
+        setError(err.message);
+        toast.error(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -50,18 +49,17 @@ const ModelSpacePage = () => {
   };
 
   const handlePredict = async () => {
-    try {
-      setPredictLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/model-spaces/${id}/predict`,
-        inputs
-      );
-      setOutput(response.data.data);
-    } catch (err) {
-      toast.error(`Prediction error: ${err.message}`);
-    } finally {
-      setPredictLoading(false);
-    }
+    setPredictLoading(true);
+    handlePredictApi(id, inputs)
+      .then(({ data }) => {
+        setOutput(data.data);
+      })
+      .catch((err) => {
+        toast.error(`Prediction error: ${err.message}`);
+      })
+      .finally(() => {
+        setPredictLoading(false);
+      });
   };
 
   const RenderOutput = () => {
