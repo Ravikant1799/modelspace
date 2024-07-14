@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchModelSpacesApi } from "../apis";
 import ModelSpaceCard from "./ModelSpaceCard";
@@ -11,11 +11,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchModelSpaces();
-  }, []);
-
-  const fetchModelSpaces = async () => {
+  const fetchModelSpaces = useCallback(() => {
     setLoading(true);
     fetchModelSpacesApi()
       .then(({ data }) => {
@@ -27,7 +23,11 @@ const HomePage = () => {
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchModelSpaces();
+  }, [fetchModelSpaces]);
 
   return (
     <div className="home-page">

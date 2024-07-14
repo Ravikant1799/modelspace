@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { fetchModelSpaceApi, handlePredictApi } from "../apis";
@@ -17,11 +17,7 @@ const ModelSpacePage = () => {
   const [predictLoading, setPredictLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchModelSpace();
-  }, [id]);
-
-  const fetchModelSpace = async () => {
+  const fetchModelSpace = useCallback(() => {
     setLoading(true);
     fetchModelSpaceApi(id)
       .then(({ data }) => {
@@ -37,7 +33,11 @@ const ModelSpacePage = () => {
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchModelSpace();
+  }, [fetchModelSpace]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked, files } = e.target;
