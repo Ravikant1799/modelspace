@@ -26,19 +26,22 @@ const HomePage = () => {
     fetchModelSpaces();
   }, []);
 
-  if (loading) return <Loader imgSrc={CardLoader} />;
-  if (error) return <div>Error: {error}</div>;
-
   return (
     <div className="home-page">
       <h1>Model Spaces</h1>
-      <div className="model-space-list">
-        {modelSpaces.map((space) => (
-          <Link to={`/model-space/${space.id}`} key={space.id}>
-            <ModelSpaceCard modelSpace={space} />
-          </Link>
-        ))}
-      </div>
+      {loading ? (
+        <Loader imgSrc={CardLoader} />
+      ) : error ? (
+        <div>Error: {error}</div>
+      ) : (
+        <div className="model-space-list">
+          {modelSpaces.map((space) => (
+            <Link to={`/model-space/${space.id}`} key={space.id}>
+              <ModelSpaceCard modelSpace={space} />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

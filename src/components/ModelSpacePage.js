@@ -17,8 +17,6 @@ const ModelSpacePage = () => {
   const [predictLoading, setPredictLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  console.log("output ", output);
-
   useEffect(() => {
     const fetchModelSpace = async () => {
       try {
@@ -93,7 +91,7 @@ const ModelSpacePage = () => {
   };
 
   if (loading) return <Loader imgSrc={ModelFormLoader} />;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div className="loader">Error: {error}</div>;
 
   return (
     <div className="model-space-page">
