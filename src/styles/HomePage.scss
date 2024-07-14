@@ -1,0 +1,15 @@
+.home-page {
+  padding: 20px;
+
+  .model-space-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    height: fit-content;
+
+    a {
+      text-decoration: none;
+    }
+  }
+}
